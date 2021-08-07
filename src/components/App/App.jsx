@@ -1,13 +1,14 @@
 import { Component } from "react";
-import MainPage from "../pages/MainPage";
-import TransactionPage from "../pages/TransactionPage";
+import { Route, Switch } from "react-router-dom";
+import MainPage from "../../pages/MainPage";
+import TransactionPage from "../../pages/TransactionPage";
+import TransactionsHistoryPage from "../../pages/TransactionsHistoryPage";
 import { setToLS, getFromLS } from "../../utils/helpers";
 import categories from "../../assets/categoriesList.json";
 import "./App.css";
 
 class App extends Component {
   state = {
-    transType: "",
     costs: [],
     incomes: [],
     costsCat: [],
@@ -38,7 +39,7 @@ class App extends Component {
 
   getTransactionsCat = (transType) => {
     const catType = transType + "Cat";
-    if (this.state[catType].length === 0) {
+    if (this.state[catType]?.length === 0) {
       const incomesCat = getFromLS(catType);
       const data = incomesCat ? incomesCat : categories[catType];
       this.setState({ [catType]: data });
@@ -46,13 +47,13 @@ class App extends Component {
     }
   };
 
-  handleOpenTransactionForm = (transType) => {
-    this.setState({ transType });
-  };
+  // handleOpenTransactionForm = (transType) => {
+  //   this.setState({ transType });
+  // };
 
-  handleCloseTransactionForm = () => {
-    this.setState({ transType: "" });
-  };
+  // handleCloseTransactionForm = () => {
+  //   this.setState({ transType: "" });
+  // };
 
   handleAddTransaction = ({ transType, transaction }) => {
     this.setState((prev) => ({
@@ -61,23 +62,29 @@ class App extends Component {
   };
 
   render() {
-    const { incomesCat, costsCat } = this.state;
+    const { incomesCat, costsCat, costs, incomes } = this.state;
     return (
       <>
-        {this.state.transType === "" ? (
-          <MainPage
-            handleOpenTransactionForm={this.handleOpenTransactionForm}
+        <Switch>
+          <Route path="/" exact component={MainPage} />
+          <Route
+            path="/transaction/:transType"
+            render={(routerProps) => (
+              <TransactionPage
+                {...routerProps}
+                // transType={this.state.transType}
+                costsCat={costsCat}
+                incomesCat={incomesCat}
+                // handleCloseTransactionForm={this.handleCloseTransactionForm}
+                handleAddTransaction={this.handleAddTransaction}
+                getTransactionsCat={this.getTransactionsCat}
+              />
+            )}
           />
-        ) : (
-          <TransactionPage
-            transType={this.state.transType}
-            costsCat={costsCat}
-            incomesCat={incomesCat}
-            handleCloseTransactionForm={this.handleCloseTransactionForm}
-            handleAddTransaction={this.handleAddTransaction}
-            getTransactionsCat={this.getTransactionsCat}
-          />
-        )}
+          <Route path="/history/:transType">
+            <TransactionsHistoryPage costs={costs} incomes={incomes} />
+          </Route>
+        </Switch>
       </>
     );
   }

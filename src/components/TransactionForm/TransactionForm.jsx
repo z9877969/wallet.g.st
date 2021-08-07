@@ -5,23 +5,17 @@ import Button from "../_share/Button/Button";
 class TransactionForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
-    const {
-      transType,
-      dataForm,
-      handleCloseTransactionForm,
-      handleAddTransaction,
-    } = this.props;
-
+    const { transType, dataForm, handleGoBack, handleAddTransaction } =
+      this.props;
     handleAddTransaction({ transType, transaction: dataForm });
-    handleCloseTransactionForm();
+    handleGoBack();
   };
 
   render() {
-    const { dataForm, handleToggleCatList, handleChange } = this.props;
+    const { dataForm, handleOpenCatList, handleChange } = this.props;
     const { date, time, category, sum, currency, comment } = dataForm;
     return (
       <form onSubmit={this.handleSubmit}>
-        <h1>TransactionForm</h1>
         <Button type="submit" title="OK" />
         <LabelInput
           title="День"
@@ -42,7 +36,7 @@ class TransactionForm extends Component {
           type="button"
           name="category"
           value={category}
-          cbOnClick={handleToggleCatList}
+          cbOnClick={handleOpenCatList}
         />
         <LabelInput
           title="Сумма"

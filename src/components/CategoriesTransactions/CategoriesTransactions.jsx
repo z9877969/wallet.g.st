@@ -1,13 +1,13 @@
+import BtnGoBack from "../_share/BtnGoBack/BtnGoBack";
 import Button from "../_share/Button/Button";
 
 const CategoriesTransactions = ({
   catList,
-  handleToggleCatList,
   handleUpdateCat,
 }) => {
   return (
     <>
-      <Button title="GoBack" cbOnClick={handleToggleCatList} />
+      <BtnGoBack title="GoBack" />
       <h1>Категории</h1>
       <ul>
         {catList.map(({ title }) => {
