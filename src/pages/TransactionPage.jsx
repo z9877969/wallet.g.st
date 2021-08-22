@@ -1,46 +1,75 @@
-import { Component } from "react";
+import { useState } from "react";
 import moment from "moment";
 import { Route, Switch } from "react-router-dom";
 import BtnGoBack from "../components/_share/BtnGoBack/BtnGoBack";
 import TransactionForm from "../components/TransactionForm/TransactionForm";
 import CategoriesTransactions from "../components/CategoriesTransactions/CategoriesTransactions";
-// import { costsCat, incomesCat } from "../../assets/categoriesList.json";
+import Section from "../components/_share/Section/Section";
+import { useDispatch, useSelector } from "react-redux";
+import { addTransaction } from "../redux/transactions/transactionsOperations";
+import { useEffect } from "react";
+import {
+  addCategories,
+  addCategory,
+  getCategories,
+} from "../redux/categories/categoriesOperations";
+import {
+  costsCat as defaultCostsCats,
+  incomesCat as defaultIncomesCats,
+} from "../assets/categoriesList.json";
+import {
+  unsetIsDefaultCosts,
+  unsetIsDefaultIncomes,
+} from "../redux/categories/categoriesActions";
 
-class TransactionPage extends Component {
-  state = {
-    date: moment().format("YYYY-MM-DD"),
-    time: moment().format("hh:mm"),
-    category:
-      this.props.match.params.transType === "costs" ? "Еда" : "Зарплата",
-    sum: "",
-    currency: "UAH",
-    comment: "",
-    isCatList: false,
-  };
+const TransactionPage = ({ match, history }) => {
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    const { getTransactionsCat, match } = this.props;
-    const { transType } = match.params;
-    getTransactionsCat(transType);
-  }
+  const { costs: isDefaultCosts, incomes: isDefaultIncomes } = useSelector(
+    (state) => state.categories.isDefault
+  );
+  const categories = useSelector((state) => state.categories);
 
-  handleChange = (e) => {
+  const { transType } = match.params;
+  const { push, location } = history;
+
+  const [data, setData] = useState(moment().format("YYYY-MM-DD"));
+  const [time, setTime] = useState(moment().format("hh:mm"));
+  const [category, setCategory] = useState(
+    transType === "costs" ? "Еда" : "Зарплата"
+  );
+  const [sum, setSum] = useState("");
+  const [currency, setCurrency] = useState("UAH");
+  const [comment, setComment] = useState("");
+
+  const dataForm = { data, time, category, sum, currency, comment };
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    this.setState({ [name]: value });
+    switch (name) {
+      case "data":
+        return setData(value);
+      case "time":
+        return setTime(value);
+      case "sum":
+        return setSum(value);
+      case "comment":
+        return setComment(value);
+      default:
+        return;
+    }
   };
 
-  handleUpdateCat = (category) => {
-    this.setState({ category });
-    this.handleGoBack();
+  const handleUpdateCat = (category) => {
+    setCategory(category);
+    handleGoBack();
   };
 
-  handleOpenCatList = () => {
-    // this.setState((prev) => ({ isCatList: !prev.isCatList }));
-    const {
-      history: { push, location },
-      match,
-    } = this.props;
+  const handleAddTransaction = () => {
+    dispatch(addTransaction({ transType, transaction: dataForm }));
+  };
 
+  const handleOpenCatList = () => {
     push({
       pathname: match.url + "/cat-list",
       state: {
@@ -49,16 +78,32 @@ class TransactionPage extends Component {
     });
   };
 
-  handleGoBack = () => {
-    const { push, location } = this.props.history;
+  const handleGoBack = () => {
     push(location.state?.from || "/");
   };
 
-  render() {
-    const { match, incomesCat, costsCat, handleAddTransaction } = this.props;
-    const { transType } = match.params;
-    const { isCatList, ...dataForm } = this.state;
-    return (
+  useEffect(() => {
+    !categories[transType + "Cat"].length && dispatch(getCategories(transType));
+  }, [dispatch]);
+
+  useEffect(() => {
+    isDefaultIncomes &&
+      defaultIncomesCats.forEach((category) =>
+        dispatch(addCategory({ transType, category }))
+      );
+
+    isDefaultCosts &&
+      defaultCostsCats.forEach((category) =>
+        dispatch(addCategory({ transType, category }))
+      );
+    return () => {
+      isDefaultIncomes && dispatch(unsetIsDefaultIncomes());
+      isDefaultCosts && dispatch(unsetIsDefaultCosts());
+    };
+  }, [isDefaultCosts, isDefaultIncomes]);
+
+  return (
+    <Section>
       <Switch>
         <Route
           path="/transaction/:transType"
@@ -68,11 +113,10 @@ class TransactionPage extends Component {
               <BtnGoBack title="GoBack" />
               <h1>{transType === "costs" ? "Расходы" : "Доходы"}</h1>
               <TransactionForm
-                transType={transType}
                 dataForm={dataForm}
-                handleGoBack={this.handleGoBack}
-                handleOpenCatList={this.handleOpenCatList}
-                handleChange={this.handleChange}
+                handleGoBack={handleGoBack}
+                handleOpenCatList={handleOpenCatList}
+                handleChange={handleChange}
                 handleAddTransaction={handleAddTransaction}
               />
             </div>
@@ -82,35 +126,15 @@ class TransactionPage extends Component {
           path="/transaction/:transType/cat-list"
           render={() => (
             <CategoriesTransactions
-              catList={transType === "costs" ? costsCat : incomesCat}
-              handleUpdateCat={this.handleUpdateCat}
+              catList={categories[transType + "Cat"]}
+              handleUpdateCat={handleUpdateCat}
+              transType={transType}
             />
           )}
         />
       </Switch>
-    );
-  }
-}
+    </Section>
+  );
+};
 
 export default TransactionPage;
-
-// {!this.state.isCatList ? (
-// <div>
-//   <Button title="GoBack" cbOnClick={this.handleGoBack} />
-//   <h1>{transType === "costs" ? "Расходы" : "Доходы"}</h1>
-//   <TransactionForm
-//     transType={transType}
-//     dataForm={dataForm}
-//     // handleCloseTransactionForm={handleCloseTransactionForm}
-//     handleToggleCatList={this.handleToggleCatList}
-//     handleChange={this.handleChange}
-//     handleAddTransaction={handleAddTransaction}
-//   />
-// </div>
-// ) : (
-// <CategoriesTransactions
-//   catList={transType === "costs" ? costsCat : incomesCat}
-//   handleToggleCatList={this.handleToggleCatList}
-//   handleUpdateCat={this.handleUpdateCat}
-// />
-// )}

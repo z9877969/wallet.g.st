@@ -1,0 +1,99 @@
+{
+  "costs": [
+    {
+      "data": "2021-08-22",
+      "time": "03:26",
+      "category": "Еда",
+      "sum": "1500",
+      "currency": "UAH",
+      "comment": "sdfsdfdsfdfs",
+      "id": 1
+    },
+    {
+      "data": "2021-08-22",
+      "time": "03:32",
+      "category": "Еда",
+      "sum": "1500",
+      "currency": "UAH",
+      "comment": "",
+      "id": 2
+    },
+    {
+      "data": "2021-08-22",
+      "time": "05:03",
+      "category": "Еда",
+      "sum": "1500",
+      "currency": "UAH",
+      "comment": "",
+      "id": 3
+    }
+  ],
+  "incomes": [
+    {
+      "data": "2021-08-22",
+      "time": "03:31",
+      "category": "Зарплата",
+      "sum": "1000",
+      "currency": "UAH",
+      "comment": "",
+      "id": 1
+    },
+    {
+      "data": "2021-08-22",
+      "time": "03:36",
+      "category": "Зарплата",
+      "sum": "20000",
+      "currency": "UAH",
+      "comment": "",
+      "id": 2
+    }
+  ],
+  "incomesCat": [
+    {
+      "title": "Зарплата",
+      "id": 1
+    },
+    {
+      "title": "Премия",
+      "id": 2
+    },
+    {
+      "title": "Зарплата",
+      "id": 3
+    },
+    {
+      "title": "Премия",
+      "id": 4
+    },
+    {
+      "title": "Зарплата",
+      "id": 5
+    },
+    {
+      "title": "Премия",
+      "id": 6
+    },
+    {
+      "title": "Зарплата",
+      "id": 7
+    },
+    {
+      "title": "Премия",
+      "id": 8
+    }
+  ],
+  "costsCat": [
+    {
+      "title": "Еда",
+      "id": 1
+    },
+    {
+      "title": "Напитки",
+      "id": 2
+    },
+    {
+      "title": "Спортзал",
+      "id": 4
+    }
+  ]
+}
