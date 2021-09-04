@@ -14,7 +14,7 @@ import {
   getCostsError,
 } from "./transactionsActions";
 
-axios.defaults.baseURL = "http://localhost:4040";
+const setDbUrl = () => (axios.defaults.baseURL = "http://localhost:4040");
 
 export const addTransaction =
   ({ transType, transaction }) =>
@@ -38,6 +38,7 @@ export const addTransaction =
   };
 
 export const getTransaction = (transType) => (dispatch) => {
+  setDbUrl()
   transType === "incomes"
     ? dispatch(getIncomesRequest())
     : dispatch(getCostsRequest());
